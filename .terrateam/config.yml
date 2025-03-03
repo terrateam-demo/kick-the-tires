@@ -1,0 +1,202 @@
+####
+# This file controls how Terrateam orchestrates your Terraform code.
+# Below, we define:
+# 1. Basic dir -> tag associations (staging, production).
+# 2. Basic workflows for each environment.
+# 3. Hooks for pre/post plan or apply steps.
+# 4. Optional advanced sections for OIDC, advanced RBAC, config builder, etc.
+####
+# This configuration does not contain all of the Terrateam configuration
+# options. The purpose of this file is to showcase how Terrateam can be
+# configured to orchestrate your Terraform operations. Terrateam can fit into
+# any monorepo by leveraging a combination of workflowss and tag queries.
+# Need help? Ping us on Slack: https://terrateam.io/slack or support@terrateam.io
+# Docs: https://docs.terrateam.io
+####
+
+################################################################################
+# Directories (dirs)
+# Define logical groupings of Terraform configurations.
+# Tags allow dynamic selection of directories (e.g., "staging" and "compute")
+################################################################################
+dirs:
+  staging/compute:
+    tags: ["staging", "compute"]
+  production/compute:
+    tags: ["production", "compute"]
+  # If you add more directories (like "dev/compute"), place them here with tags.
+
+################################################################################
+# Workflows
+# Specifies workflows triggered based on tag queries.
+# What's a tag query? 
+# Tag queries are powerful expressions that allow you to match and filter
+# resources based on their assigned tags. Terrateam supports a rich set of
+# operators and features to create complex and targeted tag queries.
+################################################################################
+workflows:
+  - tag_query: "staging and compute"
+    plan:
+      # Example run steps before init:
+      - type: run
+        cmd: ['echo', 'Custom pre-plan step for staging compute...']
+      - type: env
+        name: TF_VAR_foo
+        cmd: ['echo', 'bar']
+      - type: init
+      - type: plan
+      # Example run step after plan:
+      # - type: run
+      #   cmd: ['${TERRATEAM_ROOT}/scripts/run-after-plan.sh']
+
+    apply:
+      # Another optional run step:
+      - type: run
+        cmd: ['echo', 'About to apply staging changes...']
+      - type: init
+      - type: apply
+
+  - tag_query: "production and compute"
+    plan:
+      - type: run
+        cmd: ['echo', 'Planning for production compute...']
+      - type: init
+      - type: plan
+    apply:
+      - type: run
+        cmd: ['echo', 'Applying production changes...']
+      - type: init
+      - type: apply
+
+################################################################################
+# Hooks (Optional Examples)
+# Think of hooks and workflows like a hamburger:
+# - Hooks are the bread
+# - Workflows are the meat
+################################################################################
+# hooks:
+#   plan:
+#     pre:
+#       - type: run
+#         cmd: ['./scripts/pre-plan.sh']  # e.g. run custom script
+#     post:
+#       - type: run
+#         cmd: ['./scripts/post-plan.sh']
+#   apply:
+#     pre:
+#       - type: run
+#         cmd: ['./scripts/pre-apply.sh']
+#     post:
+#       - type: run
+#         cmd: ['./scripts/post-apply.sh']
+
+################################################################################
+# Access Control / RBAC
+################################################################################
+# access_control:
+#   policies:
+#     - tag_query: "staging and compute"
+#       plan: ["*"]                   # Everyone can plan
+#       apply: ["team:sre"]          # Only SRE can apply
+#     - tag_query: "production and compute"
+#       plan: ["team:developers", "team:sre"]
+#       apply: ["team:sre"]
+#   terrateam_config_update: ["team:sre"]
+#   unlock: ["team:sre"]
+
+################################################################################
+# Apply Requirements
+################################################################################
+# apply_requirements:
+#   create_pending_apply_check: true
+#   checks:
+#     - tag_query: "staging"
+#       approved:
+#         enabled: false
+#       merge_conflicts:
+#         enabled: true
+#       status_checks:
+#         enabled: false
+#     - tag_query: "production"
+#       approved:
+#         enabled: true
+#         any_of: ["team:sre"]
+#       merge_conflicts:
+#         enabled: true
+#       status_checks:
+#         enabled: false
+
+################################################################################
+# Automerge
+################################################################################
+automerge:
+  enabled: true
+  delete_branch: false
+
+################################################################################
+# Cost Estimation
+################################################################################
+cost_estimation:
+  enabled: true
+
+################################################################################
+# Indexer (For advanced module discovery)
+################################################################################
+# indexer:
+#   enabled: true
+
+################################################################################
+# Config Builder
+################################################################################
+# config_builder:
+#   enabled: true
+#   script: |
+#     #!/usr/bin/env python3
+#     import sys
+#     # Generate configuration here
+#     sys.exit()
+
+################################################################################
+# Example OIDC Section
+# OIDC can be configured in hooks or workflows. This depends how granular you
+# want to be.
+################################################################################
+# hooks:
+#   all:
+#     pre:
+#       - type: oidc
+#         provider: aws
+#         role_arn: "arn:aws:iam::123456789012:role/terrateam"
+# workflows:
+#  - tag_query: "staging and compute"
+#    plan:
+#      - type: oidc
+#        provider: gcp
+#        service_account: ${GCP_SERVICE_ACCOUNT}
+#        workload_identity_provider: ${GCP_WORKLOAD_IDENTITY_PROVIDER}
+#      - type: init
+#      - type: plan
+#    apply:
+#      - type: oidc
+#        provider: gcp
+#        service_account: ${GCP_SERVICE_ACCOUNT}
+#        workload_identity_provider: ${GCP_WORKLOAD_IDENTITY_PROVIDER}
+#      - type: init
+#      - type: apply
+
+
+################################################################################
+# Engine
+# Support for Terraform, OpenTofu, Terragrunt, CDKTF, and Pulumi
+################################################################################
+engine:
+  name: tofu
+  version: 1.8.7
+
+################################################################################
+# Parallel Runs
+# Define how many parallel runs you want executed in the GitHub Actions runtime
+# environment. The more runs you have, the more reesources (CPU, memory) they
+# will consume.
+################################################################################
+parallel_runs: 3
