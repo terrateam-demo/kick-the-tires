@@ -23,10 +23,12 @@ dirs:
   staging/compute:
     when_modified:
       file_patterns: ["${DIR}/*.tf", "../modules/*.tf"]
+      autoapply: true
     tags: ["staging", "compute"]
   production/compute:
     when_modified:
       file_patterns: ["${DIR}/*.tf", "../modules/*.tf"]
+      autoapply: true
     tags: ["production", "compute"]
   modules:
     when_modified:
