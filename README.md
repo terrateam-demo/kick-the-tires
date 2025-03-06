@@ -47,13 +47,13 @@ In this repository, you can apply changes before or after merging. Comment `terr
    Look at the plan output in the PR comments to see what Terraform will do. Since this is a demo, it will only simulate infrastructure changes using a null resource.
 
 5. **Apply**
-   Once satisfied, trigger an apply by commenting:
+   Once satisfied, trigger an apply by merging the pull request or commenting:
    
    ```
    terrateam apply
    ```
 
-   Terrateam will apply the changes and post the results in the PR comments. If the apply is successful then the pull request will automatically merge.
+   Terrateam will apply the changes and post the results in the PR comments. If the apply is successful then the pull request will automatically merge if not merged already.
 
 ## Customization
 
