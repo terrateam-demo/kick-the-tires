@@ -30,4 +30,3 @@ variable "network_name" {
   type    = string
   default = "default"
 }
-# Trigger
