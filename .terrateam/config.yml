@@ -23,7 +23,7 @@ dirs:
   staging/compute:
     when_modified:
       file_patterns: ["${DIR}/*.tf", "../../modules/**/*.tf"]
-      autoapply: true
+      autoapply: true # Automatically apply after the pull request is merged
     tags: ["staging", "compute"]
   production/compute:
     when_modified:

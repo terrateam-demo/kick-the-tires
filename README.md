@@ -24,7 +24,9 @@ This repository demonstrates a Terrateam demo environment using Terraform module
 
 - **Null Resources:** Instead of provisioning actual infrastructure resources, the module uses a `null_resource` to simulate instance creation. The `local-exec` provisioner prints out details, mimicking resource creation.
 - **Local Backend:** The Terraform backend is configured to use a local state file (e.g., `staging.tfstate` and `production.tfstate`), eliminating the need for cloud provider credentials or remote state management.
-- **AutoApply & AutoMerge:** The Terrateam `autoapply` and `automerge` configurations are enabled to allow apply operations to occur if the pull request is merged or if someone comments `terrateam apply`. Additionally, the pull request will automatically merge if it's not already merged after a successful apply operation.
+
+## Apply Before Merge or Apply After Merge
+In this repository, you can apply changes before or after merging. Comment `terrateam apply` after the plan operation runs, or merge the pull request to trigger the apply operation automatically. These settings are configurable in `.terrateam/config.yml`.
 
 ## Prerequisites
 
