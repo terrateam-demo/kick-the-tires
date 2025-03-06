@@ -21,9 +21,15 @@
 ################################################################################
 dirs:
   staging/compute:
+    when_modified:
+      file_patterns: ["${DIR}/*.tf", "../modules/*.tf"]
     tags: ["staging", "compute"]
   production/compute:
+    when_modified:
+      file_patterns: ["${DIR}/*.tf", "../modules/*.tf"]
     tags: ["production", "compute"]
+  modules:
+    when_modified: [] # Don't run Terrateam inside the modules directory
   # If you add more directories (like "dev/compute"), place them here with tags.
 
 ################################################################################
