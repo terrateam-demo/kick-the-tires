@@ -140,7 +140,7 @@ cost_estimation:
   enabled: true
 
 ################################################################################
-# Indexer (For advanced module discovery)
+# Indexer (For automatic module discovery)
 ################################################################################
 # indexer:
 #   enabled: true
